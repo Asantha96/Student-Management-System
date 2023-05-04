@@ -1,12 +1,31 @@
 package lk.developersstack.lms.entity;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Program {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "program_id")
     private long id;
     private String title;
     private int credit;
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
+    }
+
+    ////mapping///////////////////////////////
+    @ManyToMany
+    @JoinTable(name = "registration", joinColumns = @JoinColumn(name = "program_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))//first one is table name(registration table), second one is the primary key of the table, that is the program_id, third one is the column that is coming from the student table set here it as student_id
+    private List<Student> students;
+
+    ////mapping///////////////////////////////
 
     public Program() {
     }
