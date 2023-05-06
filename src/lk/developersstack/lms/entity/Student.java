@@ -28,24 +28,31 @@ public class Student {
         this.programs = programs;
     }
 
+
+
     /////////mapping laptop////////////////////
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "student", fetch = FetchType.EAGER)
     private Laptop laptop;
     /////////mapping laptop////////////////////
 
-    ////////mapping book//////////////////////
 
+
+    ////////mapping book//////////////////////
     @OneToMany(cascade = CascadeType.ALL,mappedBy = "student",fetch = FetchType.EAGER) //what is mean by "mapped by student" here? carry the student primary key to the book table as a foreign key to that table
     private List<Book> books;
     ////////mapping book//////////////////////
+
+
+
 
     /////////mapping program//////////////////
     @ManyToMany(mappedBy = "students")
 
     private List<Program> programs;
 
-
     /////////mapping program//////////////////
+
+
 
 
     public Student() {

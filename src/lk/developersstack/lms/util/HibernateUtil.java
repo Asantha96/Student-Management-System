@@ -35,7 +35,7 @@ public class HibernateUtil {
         //all took from the hibernate website, hibernate site, Orm, documentation,user guide, boostrap, native boostrap,building the session factory
 
     }
-    public Session getSession(){
+    public Session openSession(){
         return sessionFactory.openSession();
     }
 }
