@@ -1,6 +1,7 @@
 package lk.developersstack.lms.controller;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXTextField;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,8 +10,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import lk.developersstack.lms.bo.BoFactory;
+import lk.developersstack.lms.bo.custom.LaptopBo;
 import lk.developersstack.lms.bo.custom.StudentBo;
+import lk.developersstack.lms.dto.CreateLaptopDto;
+import lk.developersstack.lms.dto.LaptopDto;
 import lk.developersstack.lms.dto.StudentDto;
+import lk.developersstack.lms.view.tm.LaptopTM;
 import lk.developersstack.lms.view.tm.StudentTM;
 
 import java.sql.SQLException;
@@ -23,7 +28,6 @@ public class MainFormController {
     public JFXTextField txtSearch;
     public TableView<StudentTM> tblStdView;
 
-    private final StudentBo studentBo = BoFactory.getInstance().getBo(BoFactory.BoType.STUDENT);
     public TableColumn colStdId;
     public TableColumn colStdName;
     public TableColumn colStdContact;
@@ -31,9 +35,36 @@ public class MainFormController {
     public TableColumn colDelete;
     public JFXButton btnSave;
     public JFXButton addNewStudentOnAction;
+    public AnchorPane laptopManagementAnchorPane;
+    public JFXButton btnAddNewLaptop;
+    public JFXTextField txtLaptopBrand;
+    public JFXTextField txtLapSearch;
+    public TableView tblStdView1;
+    public TableColumn colLaptopId;
+    public TableColumn colLaptopBrand;
+    public TableColumn colLaptopDelete;
+    public JFXComboBox<Long> cmbStudent;
+    public JFXButton btnSaveLaptop;
+
+    public TableView tblLaptopView;
+    public AnchorPane programManagementAnchorPane;
+    public JFXButton btnAddNewProgram;
+    public JFXTextField txtProgramTitle;
+    public JFXTextField txtCredit;
+    public JFXButton btnSaveProgram;
+    public JFXTextField txtSearchProgram;
+    public TableColumn colProgramId;
+    public TableColumn colProgramTitle;
+    public TableColumn colProgramCredit;
+    public TableColumn colProgramDelete;
+    public TableView tblProgramView;
+
+    private final StudentBo studentBo = BoFactory.getInstance().getBo(BoFactory.BoType.STUDENT);
+    private final LaptopBo laptopBo = BoFactory.getInstance().getBo(BoFactory.BoType.LAPTOP);
     private StudentTM selectedStudentTm = null;
 
     public void initialize() throws SQLException, ClassNotFoundException {
+        //////////For Student initialization///////////////////////////////////////
         colStdId.setCellValueFactory(new PropertyValueFactory<>("id")); //from the StudentTm field names
         colStdName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colStdContact.setCellValueFactory(new PropertyValueFactory<>("contact"));
@@ -41,6 +72,7 @@ public class MainFormController {
         colDelete.setCellValueFactory(new PropertyValueFactory<>("deleteBtn"));
 
         loadAllStudents();
+
 
         ////////Listener to get data in row of the student table////////////////
 
@@ -54,8 +86,33 @@ public class MainFormController {
 
 
         });
-
         ////////Listener////////////////
+
+        ////////////////////////For Student initialization///////////////////////////////////
+
+
+        /////////////////////For Laptop initialization //////////////////////////////////////
+
+        //set cellValue factory
+        colLaptopId.setCellValueFactory(new PropertyValueFactory<>("lapId"));
+        colLaptopBrand.setCellValueFactory(new PropertyValueFactory<>("brand"));
+        colLaptopDelete.setCellValueFactory(new PropertyValueFactory<>("deleteButton"));
+        loadAllStudentsForLaptopSection();
+        loadAllLaptops();
+
+
+        /////////////////////For Laptop initialization //////////////////////////////////////
+
+
+    }
+
+    private void loadAllStudentsForLaptopSection() throws SQLException, ClassNotFoundException {
+        ObservableList<Long> obList = FXCollections.observableArrayList();
+        for (StudentDto dto:
+             studentBo.findAllStudents()) {
+            obList.add(dto.getId());
+        }
+        cmbStudent.setItems(obList);
     }
 
     private void loadAllStudents() throws SQLException, ClassNotFoundException {
@@ -80,6 +137,7 @@ public class MainFormController {
                         studentBo.deleteStudentById(studentTM.getId());
                         new Alert(Alert.AlertType.INFORMATION,"Student deleted").show();
                         loadAllStudents();
+                        loadAllStudentsForLaptopSection();
                     }catch (Exception ex){
                         new Alert(Alert.AlertType.ERROR,"Try again").show();
                     }
@@ -115,6 +173,7 @@ public class MainFormController {
                 new Alert(Alert.AlertType.INFORMATION, "Student updated").show();
                 btnSave.setText("Save Student");
                 loadAllStudents();
+                loadAllStudentsForLaptopSection();
                 clearStudentData();
             }catch (Exception e){
                 new Alert(Alert.AlertType.ERROR, "Try again").show();
@@ -124,6 +183,7 @@ public class MainFormController {
                 studentBo.saveStudent(studentDto);
                 new Alert(Alert.AlertType.INFORMATION, "Student saved").show();
                 loadAllStudents();
+                loadAllStudentsForLaptopSection();
                 clearStudentData();
             }catch (Exception e){
                 new Alert(Alert.AlertType.ERROR, "Try again").show();
@@ -136,5 +196,59 @@ public class MainFormController {
     private void clearStudentData() {
         txtStudentName.clear();
         txtContact.clear();
+    }
+
+    public void addNewLaptopOnAction(ActionEvent actionEvent) {
+
+    }
+
+    public void saveLaptopOnAction(ActionEvent actionEvent) {
+        try {
+            laptopBo.saveLaptop(new CreateLaptopDto(cmbStudent.getValue(),txtLaptopBrand.getText()));
+            new Alert(Alert.AlertType.INFORMATION,"Laptop saved!").show();
+            loadAllLaptops();
+            clearLaptopData();
+        }catch (Exception ex){
+            new Alert(Alert.AlertType.ERROR,"Try again!").show();
+        }
+
+    }
+
+    private void clearLaptopData() {
+        txtLaptopBrand.clear();
+        cmbStudent.getSelectionModel().clearSelection();
+    }
+
+    private void loadAllLaptops() throws SQLException, ClassNotFoundException {
+        ObservableList<LaptopTM> tmList = FXCollections.observableArrayList();
+        for (LaptopDto dto: laptopBo.findAllLaptops()
+             ) {
+            Button deleteButton = new Button("Delete");
+            deleteButton.setStyle("-fx-background-color: #EA2027");
+            LaptopTM laptopTM = new LaptopTM(dto.getLapId(),dto.getBrand(), deleteButton);
+            tmList.add(laptopTM);
+
+            deleteButton.setOnAction(event -> {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Are you sure?",ButtonType.YES,ButtonType.NO);
+                Optional<ButtonType> buttonType = alert.showAndWait();
+                if (buttonType.get() == ButtonType.YES){
+                    try{
+                        laptopBo.deleteLaptopById(laptopTM.getLapId());
+                        new Alert(Alert.AlertType.INFORMATION,"Laptop deleted!");
+                        loadAllLaptops();
+                    }catch (Exception ex){
+                        new Alert(Alert.AlertType.ERROR,"Try Again!").show();
+                    }
+                }
+            });
+        }
+        tblLaptopView.setItems(tmList);
+        tblLaptopView.refresh();
+    }
+
+    public void addNewProgramOnAction(ActionEvent actionEvent) {
+    }
+
+    public void saveProgramOnAction(ActionEvent actionEvent) {
     }
 }

@@ -60,7 +60,7 @@ public class StudentDaoImpl implements StudentDao {
             query.executeUpdate();
 
 
-            //transaction.commit();
+            transaction.commit();
         }
 
     }
@@ -68,7 +68,11 @@ public class StudentDaoImpl implements StudentDao {
     @Override
     public List<Student> findAll() throws SQLException, ClassNotFoundException {
         try(Session session = HibernateUtil.getInstance().openSession()){
+            Transaction transaction = session.beginTransaction();
+
             List<Student> studentList = session.createQuery("FROM Student", Student.class).list();
+
+            transaction.commit();
             return studentList;
         }
     }
