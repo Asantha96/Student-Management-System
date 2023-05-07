@@ -1,9 +1,6 @@
 package lk.developersstack.lms.util;
 
-import lk.developersstack.lms.entity.Book;
-import lk.developersstack.lms.entity.Laptop;
-import lk.developersstack.lms.entity.Program;
-import lk.developersstack.lms.entity.Student;
+import lk.developersstack.lms.entity.*;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
@@ -25,7 +22,7 @@ public class HibernateUtil {
                 .build();
 
         Metadata metadata = new MetadataSources(standardRegistry)
-                .addAnnotatedClass(Student.class).addAnnotatedClass(Book.class).addAnnotatedClass(Laptop.class).addAnnotatedClass(Program.class)
+                .addAnnotatedClass(Student.class).addAnnotatedClass(Book.class).addAnnotatedClass(Laptop.class).addAnnotatedClass(Program.class).addAnnotatedClass(Registration.class).addAnnotatedClass(RegistrationIds.class)
 
                 .getMetadataBuilder()
                 .applyImplicitNamingStrategy(ImplicitNamingStrategyJpaCompliantImpl.INSTANCE)

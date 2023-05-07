@@ -19,25 +19,26 @@
                </font>
             </Label>
             <Separator layoutX="9.0" layoutY="35.0" prefHeight="4.0" prefWidth="428.0" style="-fx-background-color: #ff6348;" />
-            <JFXButton buttonType="RAISED" layoutX="463.0" layoutY="7.0" onAction="#addNewStudentOnAction" style="-fx-background-color: #70a1ff;" text="Add New Student" textFill="#061106">
+            <JFXButton fx:id="addNewStudentOnAction" buttonType="RAISED" layoutX="463.0" layoutY="7.0" onAction="#addNewStudentOnAction" style="-fx-background-color: #70a1ff;" text="Add New Student" textFill="#061106">
                <font>
                   <Font size="14.0" />
                </font>
             </JFXButton>
-            <JFXTextField fx:id="txtStudentName" layoutX="21.0" layoutY="54.0" promptText="Student Name" />
-            <JFXTextField fx:id="txtContact" layoutX="184.0" layoutY="54.0" promptText="Contact Number" />
-            <JFXButton buttonType="RAISED" layoutX="372.0" layoutY="54.0" onAction="#saveStudentOnAction" style="-fx-background-color: #2ed573;" text="Save Student" textFill="#061106">
+            <JFXTextField fx:id="txtStudentName" layoutX="21.0" layoutY="54.0" prefHeight="25.0" prefWidth="200.0" promptText="Student Name" />
+            <JFXTextField fx:id="txtContact" layoutX="236.0" layoutY="54.0" prefHeight="25.0" prefWidth="209.0" promptText="Contact Number" />
+            <JFXButton fx:id="btnSave" buttonType="RAISED" layoutX="463.0" layoutY="54.0" onAction="#saveStudentOnAction" prefHeight="30.0" prefWidth="130.0" style="-fx-background-color: #2ed573;" text="Save Student" textFill="#061106">
                <font>
                   <Font size="14.0" />
                </font>
             </JFXButton>
             <JFXTextField fx:id="txtSearch" layoutX="19.0" layoutY="94.0" prefHeight="25.0" prefWidth="568.0" promptText="Search here" />
-            <TableView fx:id="tableview" layoutX="19.0" layoutY="128.0" prefHeight="161.0" prefWidth="568.0">
+            <TableView fx:id="tblStdView" layoutX="19.0" layoutY="128.0" prefHeight="161.0" prefWidth="568.0">
               <columns>
-                <TableColumn prefWidth="162.0" text="Student Id" />
-                <TableColumn prefWidth="196.0" text="Student Name" />
-                  <TableColumn prefWidth="110.0" text="Contact Number" />
-                  <TableColumn prefWidth="99.0" text="Options" />
+                <TableColumn fx:id="colStdId" prefWidth="93.00003051757812" text="Student Id" />
+                <TableColumn fx:id="colStdName" prefWidth="183.0" text="Student Name" />
+                  <TableColumn fx:id="colStdContact" prefWidth="107.0" text="Contact Number" />
+                  <TableColumn fx:id="colSeeMore" prefWidth="99.0" text="See More" />
+                  <TableColumn fx:id="colDelete" prefWidth="84.0" text="Delete" />
               </columns>
             </TableView>
          </children>

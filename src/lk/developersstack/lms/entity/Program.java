@@ -1,6 +1,7 @@
 package lk.developersstack.lms.entity;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,18 +13,21 @@ public class Program {
     private String title;
     private int credit;
 
-    public List<Student> getStudents() {
-        return students;
+    public List<Registration> getRegistrations() {
+        return registrations;
     }
 
-    public void setStudents(List<Student> students) {
-        this.students = students;
+    public void setRegistrations(List<Registration> registrations) {
+        this.registrations = registrations;
     }
 
     ////mapping///////////////////////////////
-    @ManyToMany
+    /*@ManyToMany
     @JoinTable(name = "registration", joinColumns = @JoinColumn(name = "program_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))//first one is table name(registration table), second one is the primary key of the table, that is the program_id, third one is the column that is coming from the student table set here it as student_id
-    private List<Student> students;
+    private List<Student> students;*/
+    @OneToMany(mappedBy = "program")
+
+    private List<Registration> registrations = new ArrayList<>();
 
     ////mapping///////////////////////////////
 

@@ -28,10 +28,25 @@ public class StudentBoImpl implements StudentBo {
                 studentDao.findAll()) {
             StudentDto studentDto = new StudentDto(s.getId(),s.getName(),s.getContact());
             studentDto.setLaptop(s.getLaptop());
-            studentDto.setBooks(s.getBooks()); //can get sub table data becaude of fetch type is eager loading
+            studentDto.setBooks(s.getBooks()); //can get sub table data because of fetch type is eager loading
             dtoList.add(studentDto);
 
         }
         return dtoList;
+    }
+
+    @Override
+    public void deleteStudentById(long id) throws SQLException, ClassNotFoundException {
+        studentDao.delete(id);
+    }
+
+    @Override
+    public void updateStudent(StudentDto dto) throws SQLException, ClassNotFoundException {
+
+        Student student = new Student();
+        student.setId(dto.getId());
+        student.setName(dto.getName());
+        student.setContact(dto.getContact());
+        studentDao.update(student);
     }
 }
