@@ -17,13 +17,13 @@ public class Registration {
     @MapsId("programId")
     private Program program;
 
-    private Date regData;
+    private Date regDate;
 
-    public Registration(RegistrationIds registrationIds, Student student, Program program, Date regData) {
+    public Registration(RegistrationIds registrationIds, Student student, Program program, Date regDate) {
         this.registrationIds = registrationIds;
         this.student = student;
         this.program = program;
-        this.regData = regData;
+        this.regDate = regDate;
     }
 
     public Registration() {
@@ -53,11 +53,11 @@ public class Registration {
         this.program = program;
     }
 
-    public Date getRegData() {
-        return regData;
+    public Date getRegDate() {
+        return regDate;
     }
 
-    public void setRegData(Date regData) {
-        this.regData = regData;
+    public void setRegDate(Date regData) {
+        this.regDate = regData;
     }
 }

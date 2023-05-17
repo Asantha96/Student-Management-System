@@ -11,11 +11,12 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import lk.developersstack.lms.bo.BoFactory;
 import lk.developersstack.lms.bo.custom.LaptopBo;
+import lk.developersstack.lms.bo.custom.ProgramBo;
 import lk.developersstack.lms.bo.custom.StudentBo;
-import lk.developersstack.lms.dto.CreateLaptopDto;
-import lk.developersstack.lms.dto.LaptopDto;
-import lk.developersstack.lms.dto.StudentDto;
+import lk.developersstack.lms.dto.*;
 import lk.developersstack.lms.view.tm.LaptopTM;
+import lk.developersstack.lms.view.tm.ProgramTM;
+import lk.developersstack.lms.view.tm.RegistrationTM;
 import lk.developersstack.lms.view.tm.StudentTM;
 
 import java.sql.SQLException;
@@ -61,6 +62,18 @@ public class MainFormController {
 
     private final StudentBo studentBo = BoFactory.getInstance().getBo(BoFactory.BoType.STUDENT);
     private final LaptopBo laptopBo = BoFactory.getInstance().getBo(BoFactory.BoType.LAPTOP);
+    private final ProgramBo programBo = BoFactory.getInstance().getBo(BoFactory.BoType.PROGRAM);
+    public JFXTextField txtStudentProgramSearch;
+    public TableView tblStudentProgramView;
+    public JFXComboBox<Long> cmbStudentForProgram;
+    public JFXButton btnRegister;
+    public JFXComboBox<Long> cmbProgramForStudent;
+    public AnchorPane registerForProgramAnchorPane;
+    public TableColumn colRegisteredDate;
+    public TableColumn colRegisteredStudentName;
+    public TableColumn colRegisteredProgramTitle;
+    public TableColumn colRegisteredStudentId;
+    public TableColumn colRegisteredProgramId;
     private StudentTM selectedStudentTm = null;
 
     public void initialize() throws SQLException, ClassNotFoundException {
@@ -71,7 +84,7 @@ public class MainFormController {
         colSeeMore.setCellValueFactory(new PropertyValueFactory<>("seeMoreBtn"));
         colDelete.setCellValueFactory(new PropertyValueFactory<>("deleteBtn"));
 
-        loadAllStudents();
+        loadAllStudentsForTableView();
 
 
         ////////Listener to get data in row of the student table////////////////
@@ -88,7 +101,7 @@ public class MainFormController {
         });
         ////////Listener////////////////
 
-        ////////////////////////For Student initialization///////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////
 
 
         /////////////////////For Laptop initialization //////////////////////////////////////
@@ -97,13 +110,46 @@ public class MainFormController {
         colLaptopId.setCellValueFactory(new PropertyValueFactory<>("lapId"));
         colLaptopBrand.setCellValueFactory(new PropertyValueFactory<>("brand"));
         colLaptopDelete.setCellValueFactory(new PropertyValueFactory<>("deleteButton"));
-        loadAllStudentsForLaptopSection();
-        loadAllLaptops();
+        loadAllStudentsForLaptopSection();//loading for registration pane(student loading for combo box)
+        loadAllLaptopsForTableView();
 
 
-        /////////////////////For Laptop initialization //////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        //////////for Program initialization////////
+        colProgramId.setCellValueFactory(new PropertyValueFactory<>("programId"));
+        colProgramTitle.setCellValueFactory(new PropertyValueFactory<>("title"));
+        colProgramCredit.setCellValueFactory(new PropertyValueFactory<>("credit"));
+        colProgramDelete.setCellValueFactory(new PropertyValueFactory<>("deleteBtn"));
+
+        ///////////////////////////////////////////////////////////////////////////////////////
+
+        ///////////for student register for program initialization////////////////////////////
+        loadProgramsForStudentRegisterForPrograms();
+        loadAllProgramsForTableView();
+
+        //////////////////////////////////////////////////////////////////////////////////////
+
+        /////////////////for Program registrations///////////////////////////////////////////
+        colRegisteredDate.setCellValueFactory(new PropertyValueFactory<>("registeredDate"));
+        colRegisteredProgramId.setCellValueFactory(new PropertyValueFactory<>("programId"));
+        colRegisteredStudentId.setCellValueFactory(new PropertyValueFactory<>("studentId"));
+        colRegisteredStudentName.setCellValueFactory(new PropertyValueFactory<>("studentName"));
+        colRegisteredProgramTitle.setCellValueFactory(new PropertyValueFactory<>("programTitle"));
+        loadAllProgramRegistrationsForTableView();
+
+        //////////////////////////////////////////////////////////////////////////////////////
 
 
+    }
+
+    private void loadProgramsForStudentRegisterForPrograms() throws SQLException, ClassNotFoundException{
+        ObservableList<Long> obList = FXCollections.observableArrayList();
+        for (ProgramDto dto :
+                programBo.findAllPrograms()) {
+            obList.add(dto.getProgramId());
+        }
+        cmbProgramForStudent.setItems(obList);
     }
 
     private void loadAllStudentsForLaptopSection() throws SQLException, ClassNotFoundException {
@@ -113,9 +159,10 @@ public class MainFormController {
             obList.add(dto.getId());
         }
         cmbStudent.setItems(obList);
+        cmbStudentForProgram.setItems(obList);
     }
 
-    private void loadAllStudents() throws SQLException, ClassNotFoundException {
+    private void loadAllStudentsForTableView() throws SQLException, ClassNotFoundException {
         ObservableList<StudentTM> tmList = FXCollections.observableArrayList();
 
         for (StudentDto dto :
@@ -136,7 +183,7 @@ public class MainFormController {
                     try {
                         studentBo.deleteStudentById(studentTM.getId());
                         new Alert(Alert.AlertType.INFORMATION,"Student deleted").show();
-                        loadAllStudents();
+                        loadAllStudentsForTableView();
                         loadAllStudentsForLaptopSection();
                     }catch (Exception ex){
                         new Alert(Alert.AlertType.ERROR,"Try again").show();
@@ -172,7 +219,7 @@ public class MainFormController {
                 studentBo.updateStudent(studentDto);
                 new Alert(Alert.AlertType.INFORMATION, "Student updated").show();
                 btnSave.setText("Save Student");
-                loadAllStudents();
+                loadAllStudentsForTableView();
                 loadAllStudentsForLaptopSection();
                 clearStudentData();
             }catch (Exception e){
@@ -182,7 +229,7 @@ public class MainFormController {
             try{
                 studentBo.saveStudent(studentDto);
                 new Alert(Alert.AlertType.INFORMATION, "Student saved").show();
-                loadAllStudents();
+                loadAllStudentsForTableView();
                 loadAllStudentsForLaptopSection();
                 clearStudentData();
             }catch (Exception e){
@@ -206,7 +253,7 @@ public class MainFormController {
         try {
             laptopBo.saveLaptop(new CreateLaptopDto(cmbStudent.getValue(),txtLaptopBrand.getText()));
             new Alert(Alert.AlertType.INFORMATION,"Laptop saved!").show();
-            loadAllLaptops();
+            loadAllLaptopsForTableView();
             clearLaptopData();
         }catch (Exception ex){
             new Alert(Alert.AlertType.ERROR,"Try again!").show();
@@ -219,7 +266,7 @@ public class MainFormController {
         cmbStudent.getSelectionModel().clearSelection();
     }
 
-    private void loadAllLaptops() throws SQLException, ClassNotFoundException {
+    private void loadAllLaptopsForTableView() throws SQLException, ClassNotFoundException {
         ObservableList<LaptopTM> tmList = FXCollections.observableArrayList();
         for (LaptopDto dto: laptopBo.findAllLaptops()
              ) {
@@ -235,7 +282,7 @@ public class MainFormController {
                     try{
                         laptopBo.deleteLaptopById(laptopTM.getLapId());
                         new Alert(Alert.AlertType.INFORMATION,"Laptop deleted!");
-                        loadAllLaptops();
+                        loadAllLaptopsForTableView();
                     }catch (Exception ex){
                         new Alert(Alert.AlertType.ERROR,"Try Again!").show();
                     }
@@ -250,5 +297,47 @@ public class MainFormController {
     }
 
     public void saveProgramOnAction(ActionEvent actionEvent) {
+        try{
+            programBo.saveProgram(new CreateProgramDto(txtProgramTitle.getText(),Integer.parseInt(txtCredit.getText())));
+            new Alert(Alert.AlertType.INFORMATION,"Program Saved!").show();
+            loadAllProgramsForTableView();
+            loadProgramsForStudentRegisterForPrograms();
+        }catch (Exception ex){
+            new Alert(Alert.AlertType.ERROR, "Try again!").show();
+        }
+    }
+
+    private void loadAllProgramsForTableView() throws SQLException, ClassNotFoundException{
+        ObservableList<ProgramTM> tmList = FXCollections.observableArrayList();
+        for (ProgramDto dto :
+                programBo.findAllPrograms()) {
+            Button deleteButton = new Button("Delete");
+            deleteButton.setStyle("-fx-background-color: #EA2027");
+            ProgramTM programTM = new ProgramTM(dto.getProgramId(),dto.getTitle(),dto.getCredit(),deleteButton);
+            tmList.add(programTM);
+        }
+        tblProgramView.setItems(tmList);
+        tblProgramView.refresh();
+    }
+
+    public void btnRegisterStudentWithProgramOnAction(ActionEvent actionEvent) {
+        try{
+            programBo.register(cmbStudentForProgram.getValue(),cmbProgramForStudent.getValue());
+            new Alert(Alert.AlertType.INFORMATION, "Registered!").show();
+            loadAllProgramRegistrationsForTableView();
+        }catch (Exception ex){
+            System.out.println(ex);
+            new Alert(Alert.AlertType.ERROR, "Try again").show();
+        }
+    }
+
+    private void loadAllProgramRegistrationsForTableView() throws SQLException, ClassNotFoundException {
+        ObservableList<RegistrationTM> obList = FXCollections.observableArrayList();
+        for (CustomRegistrationData customData:programBo.findAllRegistrations()
+             ) {
+            RegistrationTM registrationTM = new RegistrationTM(customData.getDate(),customData.getStudentId(),customData.getStudentName(),customData.getProgramId(),customData.getProgramTitle());
+            obList.add(registrationTM);
+        }
+        tblStudentProgramView.setItems(obList);
     }
 }
